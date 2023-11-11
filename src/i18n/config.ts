@@ -14,7 +14,7 @@ i18next
     .use(initReactI18next)
     .init({
         fallbackLng: 'zhCN',
-        debug: true,
+        debug: false,
         resources: {
             en: {
                 translation: transEN,
