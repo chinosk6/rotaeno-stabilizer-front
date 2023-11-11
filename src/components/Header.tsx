@@ -62,7 +62,7 @@ export function ActionToggle() {
     return (
         <Group position="center">
             <ActionIcon
-                onClick={() => {gotoUrl("", true)}}
+                onClick={() => {gotoUrl("https://github.com/chinosk6/rotaeno-stabilizer-front", true)}}
                 size="lg"
                 sx={themeColorSelector}
             >
