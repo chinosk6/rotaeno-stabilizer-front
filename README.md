@@ -15,7 +15,7 @@ npm install
 # 开发
 
 ```shell
-npm run build
+npm run dev
 ```
 
 
