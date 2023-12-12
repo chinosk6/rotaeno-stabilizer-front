@@ -529,9 +529,17 @@ const VideoToFramesCanvasRecordRTC = () => {
             }
 
             setCurrentStep(5)
-            const finalFileData = await restoreVideoVoice(restoredFile, origSaveName)
+            let finalFileURL: string
+            try {
+                const finalFileData = await restoreVideoVoice(restoredFile, origSaveName)
+                finalFileURL = URL.createObjectURL(new Blob([finalFileData], { type: formatType }))
+            }
+            catch (e) {
+                showWarningMessage("no audio", "Video Warning", 5000)
+                finalFileURL = URL.createObjectURL(restoredFile)
+            }
+
             setCurrentSchedule(100)
-            const finalFileURL = URL.createObjectURL(new Blob([finalFileData], { type: formatType }))
 
             setFinalDownloadFileUrl(finalFileURL)
             setCurrentStep(6)
@@ -545,7 +553,6 @@ const VideoToFramesCanvasRecordRTC = () => {
             else {
                 setCurrentError(true)
                 showErrorMessage(t("unexpectedException", {"e": e}))
-                console.log(`Unexpected Exception: ${e}`)
             }
         }
         finally {
