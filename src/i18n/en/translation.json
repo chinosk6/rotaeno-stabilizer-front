@@ -45,5 +45,8 @@
     "browserRecommendPC": "PC: It is recommended to use Chrome or a browser with Chromium kernel. FireFox may have compatibility issues.",
     "browserRecommendAndroid": "Android: It is recommended to use Chrome or Edge. Android WebView and FireFox may have compatibility issues.",
     "browserRecommendIOS": "iOS: Due to Safari only supporting VP8 encoding, the effect may not be ideal.",
-    "webVersion": "Web Version"
+    "webVersion": "Web Version",
+    "homePage": "Home Page",
+    "about": "About",
+    "streamEncodingVersion": "Stream Encoding Version"
 }

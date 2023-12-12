@@ -9,6 +9,7 @@ import {
     mdiInformationOutline
 } from "@mdi/js";
 import {NAVBAR_WIDTH} from "../App.tsx";
+import {useTranslation} from "react-i18next";
 
 
 const useStyles = createStyles((theme) => ({
@@ -44,11 +45,12 @@ export default function Navbar({ style, onClose }: NavbarProps) {
     const { classes } = useStyles();
     const [active, setActive] = useState('');
     const location = useLocation();
+    const {t} = useTranslation()
 
     const navbarData = [
-        { label: '首页', icon: mdiHomeOutline, to: '/', enabled: true },
-        { label: '预览', icon: mdiVideoOutline, to: '/preview', enabled: true },
-        { label: '录制', icon: mdiVideo, to: '/record', enabled: true },
+        { label: t("homePage"), icon: mdiHomeOutline, to: '/', enabled: true },
+        { label: t("preview"), icon: mdiVideoOutline, to: '/preview', enabled: true },
+        { label: t("record"), icon: mdiVideo, to: '/record', enabled: true },
     ];
 
     useEffect(() => {
@@ -81,7 +83,7 @@ export default function Navbar({ style, onClose }: NavbarProps) {
             <MantineNavbar.Section
                 className={classes.navbarFooter}
             >
-                <NavbarButton label="关于" icon={mdiInformationOutline} to="/about" onClose={onClose} />
+                <NavbarButton label={t("about")} icon={mdiInformationOutline} to="/about" onClose={onClose} />
             </MantineNavbar.Section>
         </MantineNavbar>
     );

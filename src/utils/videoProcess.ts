@@ -1,4 +1,4 @@
-import {computeRotation, sampleImageCanvas} from "./rotationCalc.ts";
+import {computeRotation, computeRotationV2, sampleImageCanvas} from "./rotationCalc.ts";
 import {Color} from "./models.ts";
 
 type SetDataCallback = (sampleColor: Color, leftColor: Color, rightColor: Color, centerColor: Color, angle: number) => void
@@ -19,15 +19,15 @@ function getSampleColor(origContext: OffscreenCanvasRenderingContext2D, outputVi
     const height = origContext.canvas.height
     const O = 5 * outputVideoSize
     const S = 3 * outputVideoSize
-    const sampleColor = sampleImageCanvas(origContext, O, height - O, S, S);
-    const leftColor = sampleImageCanvas(origContext, O, O, S, S);
-    const rightColor = sampleImageCanvas(origContext, width - O, height - O, S, S);
-    const centerColor = sampleImageCanvas(origContext, width - O, O, S, S);
-    return [sampleColor, leftColor, rightColor, centerColor]
+    const topLeftColor= sampleImageCanvas(origContext, O, O, S, S);
+    const topRightColor = sampleImageCanvas(origContext, width - O, O, S, S);
+    const bottomLeftColor = sampleImageCanvas(origContext, O, height - O, S, S);
+    const bottomRightColor = sampleImageCanvas(origContext, width - O, height - O, S, S);
+    return [bottomLeftColor, topLeftColor, bottomRightColor, topRightColor]
 }
 
 export function videoProcessor (video: HTMLVideoElement, previewCanvas: HTMLCanvasElement, locationPathName?: string,
-                                setDataCallback?: SetDataCallback,
+                                setDataCallback?: SetDataCallback, streamVersion: string = "v2",
                                 outputCanvas?: HTMLCanvasElement | OffscreenCanvas, autoLoop: boolean = true,
                                 outputVideoSize: number = 1.0) {
     const startTime = new Date()
@@ -46,10 +46,15 @@ export function videoProcessor (video: HTMLVideoElement, previewCanvas: HTMLCanv
 
     origContext.drawImage(video, 0, 0)  // 主要耗时
 
-    const [sampleColor, leftColor, rightColor, centerColor] = getSampleColor(origContext)
-    const angle = computeRotation(leftColor, rightColor, centerColor, sampleColor)
+    const [bottomLeftColor, topLeftColor, bottomRightColor, topRightColor] = getSampleColor(origContext)
+    let angle: number
+    switch (streamVersion) {
+        case "v1": angle = computeRotation(topLeftColor, bottomRightColor, topRightColor, bottomLeftColor); break;
+        case "v2": angle = computeRotationV2(topLeftColor, topRightColor, bottomLeftColor, bottomRightColor); break;
+        default: angle = computeRotation(topLeftColor, bottomRightColor, topRightColor, bottomLeftColor); break;
+    }
 
-    if (setDataCallback) setDataCallback(sampleColor, leftColor, rightColor, centerColor, angle)
+    if (setDataCallback) setDataCallback(bottomLeftColor, topLeftColor, bottomRightColor, topRightColor, angle)
 
     if (outputCanvas) {
         outputCanvas.width = width
@@ -70,7 +75,7 @@ export function videoProcessor (video: HTMLVideoElement, previewCanvas: HTMLCanv
         if (locationPathName) {
             if (locationPathName != document.location.pathname) return spendTime
         }
-        requestAnimationFrame(() => videoProcessor(video, previewCanvas, locationPathName, setDataCallback, outputCanvas, autoLoop, outputVideoSize))
+        requestAnimationFrame(() => videoProcessor(video, previewCanvas, locationPathName, setDataCallback, streamVersion, outputCanvas, autoLoop, outputVideoSize))
     }
     return spendTime
 }

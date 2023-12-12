@@ -1,16 +1,5 @@
 import {Color} from "./models.ts"
 
-/*
-export function getPixelColor(frame: cv.Mat, x: number, y: number): Color {
-    const data = frame.ptr(y, x);
-    return {
-        r: data[0],
-        g: data[1],
-        b: data[2],
-        a: data[3]
-    };
-}
- */
 
 export function computeRotation(left_color: Color, right_color: Color, center_color: Color, sample_color: Color, OffsetDegree: number = 180.0): number {
     const centerDist: number = Math.sqrt(Math.pow(center_color.r - sample_color.r, 2) + Math.pow(center_color.g - sample_color.g, 2) + Math.pow(center_color.b - sample_color.b, 2) + Math.pow(center_color.a - sample_color.a, 2))
@@ -26,30 +15,19 @@ export function computeRotation(left_color: Color, right_color: Color, center_co
     }
     return angle
 }
-/*
-export function sampleImage(frame: cv.Mat, x: number, y: number, width: number, height: number): Color {
-    const totalColor: Color = {r: 0, g: 0, b: 0, a: 0}
-    let colorCount = 0
-    const halfWidth = Math.round(width / 2)
-    const halfHeight = Math.round(height / 2)
-    for (let ix = x - halfWidth; ix <= x + halfWidth; ix++) {
-        for (let iy = y - halfHeight; iy <= y + halfHeight; iy++) {
-            const getColor = getPixelColor(frame, ix, iy)
-            totalColor.r += getColor.r
-            totalColor.g += getColor.g
-            totalColor.b += getColor.b
-            totalColor.a += getColor.a
-            colorCount++
-        }
-    }
-    totalColor.r /= colorCount
-    totalColor.g /= colorCount
-    totalColor.b /= colorCount
-    totalColor.a /= colorCount
-    return totalColor
-}
-*/
 
+function roundColor(color: Color) {
+    return [color.r >= 127.5 ? 1 : 0, color.g >= 127.5 ? 1 : 0, color.b >= 127.5 ? 1 : 0, color.r >= 127.5 ? 1 : 0]
+}
+
+export function computeRotationV2(topLeftColorInput: Color, topRightColorInput: Color, bottomLeftColorInput: Color, bottomRightColorInput: Color, offsetDegree: number = 0): number {
+    const topLeftColor = roundColor(topLeftColorInput)
+    const topRightColor = roundColor(topRightColorInput)
+    const bottomLeftColor = roundColor(bottomLeftColorInput)
+    const bottomRightColor = roundColor(bottomRightColorInput)
+    const colorToDegree = topLeftColor[0] * 2048 + topLeftColor[1] * 1024 + topLeftColor[2] * 512 + topRightColor[0] * 256 + topRightColor[1] * 128 + topRightColor[2] * 64 + bottomLeftColor[0] * 32 + bottomLeftColor[1] * 16 + bottomLeftColor[2] * 8 + bottomRightColor[0] * 4 + bottomRightColor[1] * 2 + bottomRightColor[2]
+    return colorToDegree / 4096 * -360 + offsetDegree
+}
 
 export function sampleImageCanvas(frame: OffscreenCanvasRenderingContext2D, x: number, y: number, width: number, height: number): Color {
     const imgData = frame.getImageData(x, y, width, height)

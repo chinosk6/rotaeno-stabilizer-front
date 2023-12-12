@@ -45,5 +45,8 @@
     "browserRecommendPC": "PC: 推荐使用 Chrome 或者使用 Chromium 内核的浏览器。FireFox 可能有兼容性问题。",
     "browserRecommendAndroid": "Android: 推荐使用 Chrome 或 Edge 浏览器。Android WebView 和 FireFox 可能有兼容性问题。",
     "browserRecommendIOS": "iOS: 由于 Safari 浏览器仅支持 VP8 编码，效果可能不理想。",
-    "webVersion": "网页版"
+    "webVersion": "网页版",
+    "homePage": "首页",
+    "about": "关于",
+    "streamEncodingVersion": "直播编码版本"
 }

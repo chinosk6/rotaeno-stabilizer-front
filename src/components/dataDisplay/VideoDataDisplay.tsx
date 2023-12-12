@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Table, Center, ColorSwatch, Card, Group, Text, FileInput, Button, Space} from "@mantine/core"
+import {Table, Center, ColorSwatch, Card, Group, Text, FileInput, Button, Select } from "@mantine/core"
 import {Color} from "../../utils/models.ts";
 import {useTranslation} from "react-i18next";
 
@@ -7,15 +7,17 @@ const VideoDataDisplay: React.FC<{sampleColor: Color, leftColor: Color, rightCol
     angle: number, previewCanvasRef: React.MutableRefObject<HTMLCanvasElement | null>,
     videoRef: React.MutableRefObject<HTMLVideoElement | null>, displayVideo: boolean,
     onFileChange: (file: File | null) => void, onStart: () => any, onStop: () => any, startDisabled: boolean, stopDisabled: boolean,
-    StepElement?: React.ComponentType, onCancel?: () => any}> = (
+    StepElement?: React.ComponentType, onCancel?: () => any, versionRef: React.MutableRefObject<string>}> = (
         {sampleColor, leftColor, rightColor, centerColor, angle, videoUrl,
             previewCanvasRef, videoRef, displayVideo,
-            onFileChange, onStart, onStop, startDisabled, stopDisabled, StepElement, onCancel}
+            onFileChange, onStart, onStop, startDisabled, stopDisabled, StepElement,
+            onCancel, versionRef}
 ) => {
 
     const rootDivRef = useRef<HTMLDivElement | null>(null);
     const [rootDivWidth, setRootDivWidth] = useState(window.innerWidth);
     const videoDisplayRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null)
+    const [version, setVersion] = useState<string | null>("v2")
     const {t} = useTranslation()
 
     useEffect(() => {
@@ -46,10 +48,16 @@ const VideoDataDisplay: React.FC<{sampleColor: Color, leftColor: Color, rightCol
         };
     }, []);
 
+    useEffect(() => {
+        versionRef.current = version ? version : "v2"
+    }, [version, versionRef]);
+
     const colorNames = ["Sample Color", "Left Color", "Right Color", "Center Color"]
+    const colorNamesV2 = ["Bottom Left", "Top Left", "Bottom Right", "Top Right"]
+
     const rows = [sampleColor, leftColor, rightColor, centerColor].map((element, index) => (
         <tr key={`color${index}`}>
-            <td>{colorNames[index]}</td>
+            <td>{version == "v1" ? colorNames[index] : colorNamesV2[index]}</td>
             <td>
                 <ColorSwatch color={`rgba(${element.r}, ${element.g}, ${element.b}, ${element.a})`}/>
             </td>
@@ -69,6 +77,17 @@ const VideoDataDisplay: React.FC<{sampleColor: Color, leftColor: Color, rightCol
                         <Text weight={500}>{t("Original Video")}</Text>
                     </Group>
                     <FileInput placeholder={t("clickSelectVideo")} accept="video/*" onChange={onFileChange} />
+                    <Select
+                        label={t("streamEncodingVersion")}
+                        placeholder={t("streamEncodingVersion")}
+                        defaultValue="v2"
+                        onChange={setVersion}
+                        disabled={!stopDisabled}
+                        data={[
+                            { value: 'v1', label: 'V1' },
+                            { value: 'v2', label: 'V2' }
+                        ]}
+                    />
                  </Card.Section>
                 <Card.Section ref={videoDisplayRef} withBorder inheritPadding py="xs">
                     <Center mt="sm">

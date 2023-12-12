@@ -15,6 +15,7 @@ const VideoToFramesCanvasPreview = () => {
     const [cc, setCc] = useState<Color>({r: 0, g: 0, b: 0, a: 0});
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [videoUrl, setVideoUrl] = useState<string>("");
+    const streamVersionRef = useRef<string>("v2");
 
     const handleFileChange = (file: File | null) => {
         if (file) {
@@ -63,7 +64,7 @@ const VideoToFramesCanvasPreview = () => {
                 setRc(rightColor)
                 setCc(centerColor)
                 setRotateAngle(angle)
-            })
+            }, streamVersionRef.current)
     }
 
     const startRotateVideo = async () => {
@@ -103,7 +104,7 @@ const VideoToFramesCanvasPreview = () => {
         <VideoDataDisplay videoRef={videoRef} videoUrl={videoUrl} previewCanvasRef={canvasRef} leftColor={lc}
                           sampleColor={sc} rightColor={rc} centerColor={cc} angle={rotateAngle} displayVideo={true}
                           onFileChange={handleFileChange} onStart={startRotateVideo} onStop={stopPlay}
-                          startDisabled={!videoFile} stopDisabled={isVideoEnded()}/>
+                          startDisabled={!videoFile} stopDisabled={isVideoEnded()} versionRef={streamVersionRef}/>
     );
 };
 

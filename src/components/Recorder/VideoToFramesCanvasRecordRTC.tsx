@@ -46,6 +46,7 @@ const VideoToFramesCanvasRecordRTC = () => {
     const forceCancelRef = useRef(forceCancel);
     const [cacheVideoDuration, setCacheVideoDuration] = useState(1);
     const cacheVideoDurationRef = useRef(cacheVideoDuration);
+    const streamVersionRef = useRef<string>("v2")
     const {t} = useTranslation()
 
     const handleFileChange = (file: File | null) => {
@@ -231,7 +232,7 @@ const VideoToFramesCanvasRecordRTC = () => {
             setRc(rightColor)
             setCc(centerColor)
             setRotateAngle(angle)
-        }, outputCanvas, autoLoop, outputVideoSize)
+        }, streamVersionRef.current, outputCanvas, autoLoop, outputVideoSize)
     }
 
     const performanceTest = async () => {
@@ -475,9 +476,12 @@ const VideoToFramesCanvasRecordRTC = () => {
             setCurrentStep(2)
 
             let videoFps = await getVideoFpsJs()
-            if (videoFps < 30) {
-                showWarningMessage(t("compatibilityWarningInfo", {fps: videoFps}), t("compatibilityWarning"), 10000)
-                videoFps = await getVideoFps(origSaveName)
+            if (videoFps < 59) {
+                const newVideoFps = await getVideoFps(origSaveName)
+                if (Math.abs(newVideoFps - videoFps) >= 4) {
+                    showWarningMessage(t("compatibilityWarningInfo", {fps: videoFps}), t("compatibilityWarning"), 10000)
+                }
+                videoFps = newVideoFps
             }
             console.log("videoFps", videoFps)
             if (videoFps < 0) {
@@ -578,7 +582,7 @@ const VideoToFramesCanvasRecordRTC = () => {
         <VideoDataDisplay videoRef={videoRef} videoUrl={videoUrl} previewCanvasRef={canvasRef} leftColor={lc}
                           sampleColor={sc} rightColor={rc} centerColor={cc} angle={rotateAngle} displayVideo={false}
                           onFileChange={handleFileChange} onStart={startRotateVideo} onStop={stopPlay} onCancel={cancelProcess}
-                          startDisabled={!videoFile || isProcessing} stopDisabled={isVideoPause()} StepElement={StepElement}/>
+                          startDisabled={!videoFile || isProcessing} stopDisabled={isVideoPause()} StepElement={StepElement} versionRef={streamVersionRef}/>
     );
 };
 
